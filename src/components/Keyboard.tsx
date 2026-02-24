@@ -1,6 +1,17 @@
 import React, { useState } from "react";
+import clsx from "clsx";
 
 export default function Keyboard() {
+  const [currentWord, setCurrentWord] = useState("react");
+  const getWords = currentWord.split("").map((el, index) => (
+    <span
+      key={index}
+      className="h-9 w-10 border-b border-b-white border border-[#323232] bg-[#323232] flex justify-center items-center text-[#F9F4DA]  font-bold"
+    >
+      {el.toUpperCase()}
+    </span>
+  ));
+
   const [guessedWord, setGuessedWord] = useState<string[]>([]);
   function addGuessedWords(letter: string) {
     setGuessedWord((word) => {
@@ -10,25 +21,27 @@ export default function Keyboard() {
     });
   }
   const alphabets = "abcdefghijklmnopqrstuvwxyz";
-  const getKeyboard = alphabets.split("").map((letter, index) => (
-    <button
-      key={index}
-      value={letter}
-      onClick={() => addGuessedWords(letter)}
-      className="h-9 w-10 flex justify-center items-center text-black border border-white rounded-sm bg-[#FCBA29] cursor-pointer"
-    >
-      {letter.toUpperCase()}
-    </button>
-  ));
-  const [word, setWord] = useState("react");
-  const getWords = word.split("").map((el, index) => (
-    <span
-      key={index}
-      className="h-9 w-10 border-b border-b-white border border-[#323232] bg-[#323232] flex justify-center items-center text-[#F9F4DA]  font-bold"
-    >
-      {el.toUpperCase()}
-    </span>
-  ));
+  const getKeyboard = alphabets.split("").map((letter, index) => {
+    const isGuessed = guessedWord.includes(letter);
+    const isCorrect = isGuessed && currentWord.includes(letter);
+    const isWrong = isGuessed && !currentWord.includes(letter);
+    const classNames = clsx({
+        correct : isCorrect,
+        wrong : isWrong,
+    })
+    return (
+      <button
+        style={{backgroundColor : classNames}}
+        key={index}
+        value={letter}
+        onClick={() => addGuessedWords(letter)}
+        className={`${classNames} h-9 w-10 flex justify-center items-center text-black border border-white rounded-sm cursor-pointer bg-[#FCBA29]`}
+      >
+        {letter.toUpperCase()}
+      </button>
+    );
+  });
+
   return (
     <>
       <div className="flex gap-0.5 mt-5">{getWords}</div>
