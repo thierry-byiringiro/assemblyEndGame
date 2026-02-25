@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import clsx from "clsx";
 import Language from "../assets/languages.json";
+import StatusBar from "./StatusBar";
 
 export default function Keyboard() {
   const [guessedWord, setGuessedWord] = useState<string[]>([]);
@@ -23,8 +24,12 @@ export default function Keyboard() {
   const wrongGuessesCount = guessedWord.filter((el) => {
     return !currentWord.includes(el);
   }).length;
+  let getTheNames : string[] = [];
   const languages = Language.map((el, index) => {
     const isLanguageLost = index < wrongGuessesCount;
+    if(isLanguageLost){
+      getTheNames.push(el.name);
+    }
     const classNames = clsx("chip", isLanguageLost && "lost");
     return (
       <li
@@ -36,6 +41,11 @@ export default function Keyboard() {
       </li>
     );
   });
+  const isGameWon = currentWord
+    .split("")
+    .every((letter) => guessedWord.includes(letter));
+  const isGameLost = wrongGuessesCount === languages.length - 1;
+  const isGameOver = isGameWon || isGameLost;
 
   const alphabets = "abcdefghijklmnopqrstuvwxyz";
   const getKeyboard = alphabets.split("").map((letter, index) => {
@@ -61,6 +71,7 @@ export default function Keyboard() {
 
   return (
     <>
+      <StatusBar isGameWon={isGameWon} isGameLost={isGameLost} languageNames={getTheNames}/>
       <div className="w-90.25 h-12.75">
         <ul className="flex justify-center items-center flex-row gap-1 flex-wrap">
           {languages}
@@ -71,9 +82,11 @@ export default function Keyboard() {
         <div className="w-120 h-33 flex flex-wrap justify-center items-center space-x-2">
           {getKeyboard}
         </div>
-        <button className="w-57 h-10 p-4 bg-[#11B5E5] flex items-center justify-center border border-white rounded-sm cursor-pointer">
-          New Game
-        </button>
+        {isGameOver && (
+          <button className="w-57 h-10 p-4 bg-[#11B5E5] flex items-center justify-center border border-white rounded-sm cursor-pointer">
+            New Game
+          </button>
+        )}
       </div>
     </>
   );
