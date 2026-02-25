@@ -16,15 +16,10 @@ export default function Keyboard() {
   const randomIndex = Math.floor(Math.random() * words.length);
   const languageNames = Language.map((el) => el.name);
   const [currentWord, setCurrentWord] = useState(words[randomIndex]);
-  console.log(currentWord);
-  const getWords = currentWord.split("").map((letter, index) => (
-    <span
-      key={index}
-      className="h-9 w-10 border-b border-b-white border border-[#323232] bg-[#323232] flex justify-center items-center text-[#F9F4DA]  font-bold"
-    >
-      {guessedWord.includes(letter) ? letter.toUpperCase() : ""}
-    </span>
-  ));
+  const handleResetGame = () => {
+    setCurrentWord(words[randomIndex]);
+    setGuessedWord([]);
+  };
   const wrongGuessesCount = guessedWord.filter((el) => {
     return !currentWord.includes(el);
   }).length;
@@ -34,6 +29,18 @@ export default function Keyboard() {
     .every((letter) => guessedWord.includes(letter));
   const isGameLost = wrongGuessesCount === Language.length - 1;
   const isGameOver = isGameWon || isGameLost;
+  const getWords = currentWord.split("").map((letter, index) => {
+    const revealLetters = isGameLost || guessedWord.includes(letter);
+    return (
+
+    <span
+      key={index}
+      className="h-9 w-10 border-b border-b-white border border-[#323232] bg-[#323232] flex justify-center items-center text-[#F9F4DA]  font-bold"
+    >
+      {revealLetters ? letter.toUpperCase() : ""}
+    </span>
+  )
+});
 
   const alphabets = "abcdefghijklmnopqrstuvwxyz";
   const getKeyboard = alphabets.split("").map((letter, index) => {
@@ -78,7 +85,10 @@ export default function Keyboard() {
           {getKeyboard}
         </div>
         {isGameOver && (
-          <button className="w-57 h-10 p-4 bg-[#11B5E5] flex items-center justify-center border border-white rounded-sm cursor-pointer">
+          <button
+            onClick={handleResetGame}
+            className="w-57 h-10 p-4 bg-[#11B5E5] flex items-center justify-center border border-white rounded-sm cursor-pointer"
+          >
             New Game
           </button>
         )}
