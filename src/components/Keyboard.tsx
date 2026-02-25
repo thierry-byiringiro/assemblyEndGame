@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import clsx from "clsx";
 import Language from "../assets/languages.json";
 import StatusBar from "./StatusBar";
-
+import Languages from "./Languages";
+import { words } from "../assets/words";
 export default function Keyboard() {
   const [guessedWord, setGuessedWord] = useState<string[]>([]);
   function addGuessedWords(letter: string) {
@@ -12,7 +13,10 @@ export default function Keyboard() {
       return Array.from(letterSet);
     });
   }
-  const [currentWord, setCurrentWord] = useState("react");
+  const randomIndex = Math.floor(Math.random() * words.length);
+  const languageNames = Language.map((el) => el.name);
+  const [currentWord, setCurrentWord] = useState(words[randomIndex]);
+  console.log(currentWord);
   const getWords = currentWord.split("").map((letter, index) => (
     <span
       key={index}
@@ -24,27 +28,11 @@ export default function Keyboard() {
   const wrongGuessesCount = guessedWord.filter((el) => {
     return !currentWord.includes(el);
   }).length;
-  let getTheNames : string[] = [];
-  const languages = Language.map((el, index) => {
-    const isLanguageLost = index < wrongGuessesCount;
-    if(isLanguageLost){
-      getTheNames.push(el.name);
-    }
-    const classNames = clsx("chip", isLanguageLost && "lost");
-    return (
-      <li
-        key={index}
-        style={{ backgroundColor: el.backgroundColor, color: el.color }}
-        className={`${classNames} p-1 flex justify-center font-bold rounded-sm`}
-      >
-        {el.name}
-      </li>
-    );
-  });
+
   const isGameWon = currentWord
     .split("")
     .every((letter) => guessedWord.includes(letter));
-  const isGameLost = wrongGuessesCount === languages.length - 1;
+  const isGameLost = wrongGuessesCount === Language.length - 1;
   const isGameOver = isGameWon || isGameLost;
 
   const alphabets = "abcdefghijklmnopqrstuvwxyz";
@@ -62,21 +50,28 @@ export default function Keyboard() {
         key={index}
         value={letter}
         onClick={() => addGuessedWords(letter)}
+        disabled={isGameOver}
+        aria-disabled={guessedWord.includes(letter)}
         className={`${classNames} h-9 w-10 flex justify-center items-center text-black border border-white rounded-sm cursor-pointer bg-[#FCBA29]`}
       >
         {letter.toUpperCase()}
       </button>
     );
   });
-
+  const LastGuessedLetter = guessedWord[guessedWord.length - 1];
+  const isLastGussedIncorrect =
+    LastGuessedLetter && !currentWord.includes(LastGuessedLetter);
+  const combine: boolean = !!(isLastGussedIncorrect && !isGameOver);
   return (
     <>
-      <StatusBar isGameWon={isGameWon} isGameLost={isGameLost} languageNames={getTheNames}/>
-      <div className="w-90.25 h-12.75">
-        <ul className="flex justify-center items-center flex-row gap-1 flex-wrap">
-          {languages}
-        </ul>
-      </div>
+      <StatusBar
+        isGameWon={isGameWon}
+        isGameLost={isGameLost}
+        languageNames={languageNames}
+        combine={combine}
+        wrongGuesses={wrongGuessesCount - 1}
+      />
+      <Languages wrongGuessCount={wrongGuessesCount} />
       <div className="flex gap-0.5 mt-5">{getWords}</div>
       <div className="flex flex-col space-y-4 items-center">
         <div className="w-120 h-33 flex flex-wrap justify-center items-center space-x-2">
