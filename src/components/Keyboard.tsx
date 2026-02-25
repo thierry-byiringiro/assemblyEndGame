@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import clsx from "clsx";
+import Language from "../assets/languages.json";
 
 export default function Keyboard() {
   const [guessedWord, setGuessedWord] = useState<string[]>([]);
@@ -19,6 +20,22 @@ export default function Keyboard() {
       {guessedWord.includes(letter) ? letter.toUpperCase() : ""}
     </span>
   ));
+  const wrongGuessesCount = guessedWord.filter((el) => {
+    return !currentWord.includes(el);
+  }).length;
+  const languages = Language.map((el, index) => {
+    const isLanguageLost = index < wrongGuessesCount;
+    const classNames = clsx("chip", isLanguageLost && "lost");
+    return (
+      <li
+        key={index}
+        style={{ backgroundColor: el.backgroundColor, color: el.color }}
+        className={`${classNames} p-1 flex justify-center font-bold rounded-sm`}
+      >
+        {el.name}
+      </li>
+    );
+  });
 
   const alphabets = "abcdefghijklmnopqrstuvwxyz";
   const getKeyboard = alphabets.split("").map((letter, index) => {
@@ -44,6 +61,11 @@ export default function Keyboard() {
 
   return (
     <>
+      <div className="w-90.25 h-12.75">
+        <ul className="flex justify-center items-center flex-row gap-1 flex-wrap">
+          {languages}
+        </ul>
+      </div>
       <div className="flex gap-0.5 mt-5">{getWords}</div>
       <div className="flex flex-col space-y-4 items-center">
         <div className="w-120 h-33 flex flex-wrap justify-center items-center space-x-2">
