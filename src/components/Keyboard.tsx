@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import Language from "../assets/languages.json";
 import StatusBar from "./StatusBar";
 import Languages from "./Languages";
 import { words } from "../assets/words";
+import ReactConfetti from "react-confetti";
 export default function Keyboard() {
   const [guessedWord, setGuessedWord] = useState<string[]>([]);
   function addGuessedWords(letter: string) {
@@ -41,7 +42,6 @@ export default function Keyboard() {
     </span>
   )
 });
-
   const alphabets = "abcdefghijklmnopqrstuvwxyz";
   const getKeyboard = alphabets.split("").map((letter, index) => {
     const isGuessed = guessedWord.includes(letter);
@@ -71,6 +71,7 @@ export default function Keyboard() {
   const combine: boolean = !!(isLastGussedIncorrect && !isGameOver);
   return (
     <>
+    {isGameWon && <ReactConfetti/>}
       <StatusBar
         isGameWon={isGameWon}
         isGameLost={isGameLost}
