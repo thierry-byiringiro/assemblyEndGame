@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import HandleSelection from "./HandleSelection";
 import DisplayTime from "./DisplayTime";
 import Button from "./Button";
@@ -32,12 +32,22 @@ function Timer() {
 
   const reset = () => {
     setisRunning(false);
-    if (selectedTime) {
-      const minutes = Number(selectedTime);
-      setTimeLeft(minutes * 60 * 1000);
-    }
+    setTimeLeft(0)
   };
-  
+
+  useEffect(() => {
+    let intervaliId: number | undefined;
+    if(isRunning && timeLeft > 0){
+      intervaliId = setInterval(()=>{
+        setTimeLeft((prev) => prev - 10);
+      },10)
+    }
+    if(timeLeft <=0){
+      setisRunning(false);
+      setTimeLeft(0);
+    }
+    return () => clearInterval(intervaliId);
+  })
   return (
     <>
       <fieldset className="flex flex-col items-center justify-center gap-6 border border-gray-400 p-6 rounded-lg">
