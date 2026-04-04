@@ -1,7 +1,6 @@
 import "./App.css";
 import Header from "./components/Header";
 import Keyboard from "./components/Keyboard";
-import StatusBar from "./components/StatusBar";
 import Timer from "./Timer/Timer";
 
 function App() {
